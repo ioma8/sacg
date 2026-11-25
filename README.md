@@ -5,7 +5,6 @@
 [![Forks](https://img.shields.io/github/forks/ricklamers/shell-ai)](https://github.com/ricklamers/shell-ai/network)
 [![Stars](https://img.shields.io/github/stars/ricklamers/shell-ai)](https://github.com/ricklamers/shell-ai/stargazers)
 
-
 Shell-AI (`shai`) is a CLI utility that brings the power of natural language understanding to your command line. Simply input what you want to do in natural language, and `shai` will suggest single-line commands that achieve your intent. Under the hood, Shell-AI leverages the [LangChain](https://github.com/langchain-ai/langchain) for LLM use and builds on the excellent [InquirerPy](https://github.com/kazhala/InquirerPy) for the interactive CLI.
 
 ![demo-shell-ai](https://github.com/ricklamers/shell-ai/assets/1309307/b4057165-5c23-46d4-b68e-00915b738dc3)
@@ -43,37 +42,25 @@ Shell-AI will then suggest 3 commands to fulfill your request:
 - **Azure Compatibility**: Shell-AI now supports Azure OpenAI deployments.
 
 ## Configuration
+
+Shell-AI can be configured through environment variables or a config file located at `~/.config/shell-ai/config.json` (Linux/MacOS) or `%APPDATA%\shell-ai\config.json` (Windows).
+
 ### Environment Variables
 
-1. **`OPENAI_API_KEY`**: Required. Set this environment variable to your OpenAI API key. You can find it on your [OpenAI Dashboard](https://beta.openai.com/account/api-keys).
+- `OPENAI_API_KEY`: (Required) Your OpenAI API key, leave empty if you use ollama
+- `OPENAI_MODEL`: The OpenAI model to use (default: "gpt-3.5-turbo")
+- `OPENAI_API_BASE`: The OpenAI API / OpenAI compatible API endpoint to use (default: None)
+- `GROQ_API_KEY`: (Required if using Groq) Your Groq API key
+- `SHAI_SUGGESTION_COUNT`: Number of suggestions to generate (default: 3)
+- `SHAI_SKIP_CONFIRM`: Skip command confirmation when set to "true"
+- `SHAI_SKIP_HISTORY`: Skip writing to shell history when set to "true"
+- `SHAI_API_PROVIDER`: Choose between "openai", "ollama", "azure", or "groq" (default: "groq")
+- `SHAI_TEMPERATURE`: Controls randomness in the output (default: 0.05). Lower values (e.g., 0.05) make output more focused and deterministic, while higher values (e.g., 0.7) make it more creative and varied.
+- `CTX`: Enable context mode when set to "true" (Note: outputs will be sent to the API)
+- `OLLAMA_MODEL`: The Ollama model to use (default: "phi3.5")
+- `OLLAMA_API_BASE`: The Ollama endpoint to use (default: "http://localhost:11434/v1/")
 
-### Optional Variables
-
-1. **`OPENAI_MODEL`**: Defaults to `gpt-3.5-turbo`. You can set it to another OpenAI model if desired.
-2. **`OPENAI_MAX_TOKENS`**: Defaults to `None`. You can set the maximum number of tokens that can be generated in the chat completion.
-3. **`SHAI_SUGGESTION_COUNT`**: Defaults to 3. You can set it to specify the number of suggestions to generate.
-4. **`OPENAI_API_BASE`**: Defaults to `https://api.openai.com/v1`. You can set it to specify the proxy or service emulator.
-5. **`OPENAI_ORGANIZATION`**: OpenAI Organization ID
-6. **`OPENAI_PROXY`**: OpenAI proxy
-7. **`OPENAI_API_TYPE`**: Set to "azure" if you are using Azure deployments.
-8. **`AZURE_DEPLOYMENT_NAME`**: Your Azure deployment name (required if using Azure).
-9. **`AZURE_API_BASE`**: Your Azure API base (required if using Azure).
-10. **`CTX`**: Allow the assistant to keep the console outputs as context allowing the LLM to produce more precise outputs. ***IMPORTANT***: the outputs will be sent to OpenAI through their API, be careful if any sensitive data. Default to false.
-
-You can also enable context mode in command line with `--ctx` flag:
-
-```bash
-shai --ctx [request]
-```
-
-### Configuration File
-
-Alternatively, you can store these variables in a JSON configuration file:
-
-- For Linux/macOS: Create a file called `config.json` under `~/.config/shell-ai/` and secure it with `chmod 600 ~/.config/shell-ai/config.json`.
-- For Windows: Create a file called `config.json` under `%APPDATA%\shell-ai\`
-
-Example `config.json`:
+### Config File Example
 
 ```json
 {
@@ -84,10 +71,62 @@ Example `config.json`:
 }
 ```
 
+### Config Example for OpenAI compatible
+
+```json
+{
+   "SHAI_API_PROVIDER": "openai",
+   "OPENAI_API_KEY": "deepseek_api_key",
+   "OPENAI_API_BASE": "https://api.deepseek.com",
+   "OPENAI_MODEL": "deepseek-chat",
+   "SHAI_SUGGESTION_COUNT": "3",
+   "SHAI_SUGGESTION_COUNT": "3",
+   "CTX": true
+}
+```
+
+### Config example for MistralAI
+
+```json
+{
+   "SHAI_API_PROVIDER": "mistral",
+   "MISTRAL_API_KEY": "mistral_api_key",
+   "MISTRAL_API_BASE": "https://api.mistral.ai/v1",
+   "MISTRAL_MODEL": "codestral-2508",
+   "SHAI_SUGGESTION_COUNT": "3",
+   "CTX": true
+}
+
+```
+
+### Config Example for Ollama
+
+```json
+   {
+   "OPENAI_API_KEY":"",
+   "SHAI_SUGGESTION_COUNT": "3",
+   "SHAI_API_PROVIDER": "ollama",
+   "OLLAMA_MODEL": "phi3.5",
+   "OLLAMA_API_BASE": "http://localhost:11434/v1/",
+   "SHAI_TEMPERATURE": "0.05"
+   }
+```
+
 The application will read from this file if it exists, overriding any existing environment variables.
 
 Run the application after setting these configurations.
 
+### Using with Groq
+
+To use Shell AI with Groq:
+
+1. Get your API key from Groq
+2. Set the following environment variables:
+   ```bash
+   export SHAI_API_PROVIDER=groq
+   export GROQ_API_KEY=your_api_key_here
+   export GROQ_MODEL=llama-3.3-70b-versatile
+   ```
 
 ## Contributing
 
